@@ -7,6 +7,9 @@ import ManueleSeretti.u5w3d1.exceptions.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -50,6 +53,7 @@ public class UtenteController {
 
     // 4. PUT http://localhost:3001/users/:id (+ body)
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public User
     findByIdAndUpdate(@PathVariable int id, @RequestBody User
             body) {
@@ -58,15 +62,37 @@ public class UtenteController {
 
     // 5. DELETE http://localhost:3001/users/:id
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
     @ResponseStatus(HttpStatus.NO_CONTENT) // <-- 204 NO CONTENT
     public void findByIdAndDelete(@PathVariable long id) {
         usersService.findByIdAndDelete(id);
     }
 
-    @PostMapping("/upload/{id}")
-    public String uploadExample(@PathVariable long id, @RequestParam("image") MultipartFile body) throws IOException {
+    @PostMapping("/upload/me")
+    public String uploadExample(@AuthenticationPrincipal User currentUser, @RequestParam("image") MultipartFile body) throws IOException {
         System.out.println(body.getSize());
         System.out.println(body.getContentType());
-        return usersService.uploadPicture(id, body);
+        return usersService.uploadPicture(currentUser.getId(), body);
     }
+
+    @GetMapping("/me")
+    public UserDetails getProfile(@AuthenticationPrincipal UserDetails currentUser) {
+        return currentUser;
+    }
+
+    ;
+
+    @PutMapping("/me")
+    public UserDetails getProfile(@AuthenticationPrincipal User currentUser, @RequestBody User body) {
+        return usersService.findByIdAndUpdate(currentUser.getId(), body);
+    }
+
+    @DeleteMapping("/me")
+    @ResponseStatus(HttpStatus.NO_CONTENT) // <-- 204 NO CONTENT
+    public void getProfile(@AuthenticationPrincipal User currentUser) {
+        usersService.findByIdAndDelete(currentUser.getId());
+    }
+
+    ;
+
 }

@@ -15,6 +15,8 @@ import org.springframework.stereotype.Component;
 @EnableMethodSecurity
 public class SecurityConfig {
     @Autowired
+    ExceptionsHandlerFilter exceptionsHandlerFilter;
+    @Autowired
     private JWTAuthorFilter jwtAuthFilter;
 
     @Bean
@@ -24,10 +26,14 @@ public class SecurityConfig {
         http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         http.csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable());
         http.formLogin(httpSecurityFormLoginConfigurer -> httpSecurityFormLoginConfigurer.disable());
+//AGGIUNTA DEI FILTRI CUSTOM
+
 
         http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-
+        http.addFilterBefore(exceptionsHandlerFilter, JWTAuthorFilter.class);
         http.authorizeHttpRequests(request -> request.requestMatchers("/**").permitAll());
         return http.build();
     }
+
+
 }

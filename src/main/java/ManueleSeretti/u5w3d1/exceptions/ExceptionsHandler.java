@@ -2,6 +2,7 @@ package ManueleSeretti.u5w3d1.exceptions;
 
 import ManueleSeretti.u5w3d1.Payloads.ErrorsResponseWithListDTO;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,6 +24,18 @@ public class ExceptionsHandler {
             return new ErrorsResponseWithListDTO(e.getMessage(), new Date(), new ArrayList<>());
         }
 
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED) // 401
+    public ErrorsPayload handleUnauthorized(UnauthorizedException e) {
+        return new ErrorsPayload(e.getMessage(), new Date());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN) // 403
+    public ErrorsPayload handleAccessDenied(AccessDeniedException e) {
+        return new ErrorsPayload(e.getMessage(), new Date());
     }
 
     @ExceptionHandler(NotFoundException.class)
