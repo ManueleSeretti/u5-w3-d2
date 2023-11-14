@@ -40,7 +40,7 @@ public class UserService {
         u.setSurname(body.surname());
         u.setUserName(body.username());
         u.setEmail(body.email());
-        u.setPassword(Bcrypt.encode(u.getPassword()));
+        u.setPassword(Bcrypt.encode(body.password()));
         u.setRole(Role.USER);
         u.setImgUrl("http://ui-avatars.com/api/?name=" + u.getName() + "+" + u.getSurname());
 
@@ -84,5 +84,11 @@ public class UserService {
     public User findByEmail(String email) {
         return utenteRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("Utente con email " + email + " non trovato!"));
+    }
+
+    public User findByIdAndUpdateAdmin(long id) {
+        User u = findById(id);
+        u.setRole(Role.ADMIN);
+        return utenteRepository.save(u);
     }
 }

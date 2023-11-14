@@ -93,6 +93,5 @@ public class UtenteController {
         usersService.findByIdAndDelete(currentUser.getId());
     }
 
-    ;
 
 }

@@ -44,4 +44,9 @@ public class AuthController {
 
     }
 
+    @PatchMapping("/update/admin/{id}")
+    public User updateAdmin(@PathVariable long id) {
+        return usersService.findByIdAndUpdateAdmin(id);
+    }
+
 }
